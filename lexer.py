@@ -1,5 +1,6 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
+# vim:ts=4:et:
 
 import ply.lex as lex
 
@@ -17,6 +18,10 @@ class Lexer(object):
     ''' Lexer embedded in a class so several Lexer instances
     can be used in the same program.
     '''
+    states = (
+        ('string', 'exclusive'),
+    )
+
     def __init__(self, tokens = TOKENS):
         ''' Constructor: tokens = t-uple with TOKENS list
         '''
@@ -27,12 +32,31 @@ class Lexer(object):
         r'[ \t\n]+' # Matches one or more spaces and tabs
         pass      # and skips them
 
-    def t_error(self, t):
+    def t_string_INITIAL_error(self, t):
         ''' Error handling rule. Called on lexical error.
         '''
         print "illegal character '%s'" % t.value[0]
 
     # --- TOKENS patterns --- #
+
+    def t_STR(self, t):
+        r"'" # Start of string
+        t.lexer.begin('string')
+        self.__str = ''             # Initializes string buffer
+
+    def t_string_ESCCHAR(self, t):
+        r'\\.'
+        self.__str += t.value[-1]   # Append matched text last char
+
+    def t_string_CHRSTR(self, t):
+        r"[^'\\]+"
+        self.__str += t.value  # Append matched text *except* last char
+
+    def t_string_STR(self, t):
+        r"'"
+        t.lexer.begin('INITIAL')    # Exits string stated. Back to INITIAL
+        t.value = self.__str
+        return t
 
     def t_LP(self, t):
         r'\('
@@ -76,7 +100,6 @@ if __name__ == '__main__':
     import sys
     
     tmp.input(sys.stdin.read())
-    print "aa"
     while True:
         token = tmp.token()
         if not token:
