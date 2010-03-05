@@ -43,6 +43,10 @@ if __name__ == '__main__':
     import sys
 
     parser = yacc.yacc()
-    parser.parse(sys.stdin.read(), debug = True)
+    
+    if len(sys.argv) < 2:
+        parser.parse(sys.stdin.read())
+    else:
+        parser.parse(open(sys.argv[1], "rt").read())
     
 
