@@ -29,8 +29,14 @@ class Lexer(object):
         self.tokens = tokens
 
     def t_skip(self, t):
-        r'[ \t\n]+' # Matches one or more spaces and tabs
+        r'[ \t]+' # Matches one or more spaces and tabs
         pass      # and skips them
+
+
+    def t_newline(self, t):
+        r'\r?\n' # Skips newline, but increases lineno counter
+        t.lexer.lineno += 1
+        
 
     def t_string_INITIAL_error(self, t):
         ''' Error handling rule. Called on lexical error.
