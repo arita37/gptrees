@@ -21,5 +21,6 @@ class Arglist(Symbol):
     def __getitem__(self, key):
         return self.list[key]
 
-
+    def __str__(self):
+        return self.__class__.__name__ + ': [' + ', '.join(str(x) for x in self.list) + ']'
 

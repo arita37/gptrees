@@ -10,5 +10,6 @@ class Terminal(Symbol):
     def __init__(self, text):
         super(self.__class__, self).__init__(text = text)
 
-
+    def __str__(self):
+        return self.__clas__.__name__ + ': ' + self.text
 

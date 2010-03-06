@@ -17,4 +17,6 @@ class Symbol(object):
         self.text = text
         self.isTerminal = text is not None
     
+    def __str__(self):
+        return self.__class__.__name__
 
