@@ -5,38 +5,45 @@
 from ply import yacc
 from lexer import Lexer
 from lexer import TOKENS as tokens
+from symboltable import SymbolTable
+import symbol
 
 
 # Start symbol
 def p_S(p):
-    ''' S : treeDefinition
+    ''' S : TreeDefinition
     '''
 
 def p_Slist(p):
-    ''' S : S treeDefinition
+    ''' S : S TreeDefinition
     '''
 
 def p_tree_is_terminal(p):
-    ''' treeDefinition : ID IS terminal
+    ''' TreeDefinition : ID IS Terminal
     '''
 
 def p_tree_is_subtree(p):
-    ''' treeDefinition : ID IS terminal LP arglist RP
+    ''' TreeDefinition : ID IS Terminal LP Arglist RP
     '''
 
 def p_arglist_is_tree(p):
-    ''' arglist : terminal
+    ''' Arglist : Terminal
     '''
 
 def p_arglist_is_list_arglist(p):
-    ''' arglist : arglist COMMA terminal
+    ''' Arglist : Arglist COMMA Terminal
     '''
 
-def p_terminals(p):
-    ''' terminal : ID
-                 | STR
+def p_terminal_is_ID(p):
+    ''' Terminal : ID
     '''
-    
+
+def p_terminal_is_STR(p):
+    ''' Terminal : STR
+    '''
+    p[0] = symbol.Terminal(p.text)
+    print p[0]
+
 
 
 if __name__ == '__main__':
