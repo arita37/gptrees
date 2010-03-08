@@ -37,6 +37,8 @@ def p_arglist_is_list_arglist(p):
 def p_terminal_is_ID(p):
     ''' Terminal : ID
     '''
+    p[0] = symbol.ID(p[1])
+    print p[0].symbol_name
 
 def p_terminal_is_STR(p):
     ''' Terminal : STRING

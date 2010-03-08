@@ -7,16 +7,16 @@ class Symbol(object):
     '''
     isTerminal = None
     text = None # If isTerminal => the recognized text
-    token = None # The symbol name as a string
+    symbol_name = None # The symbol name as a string
 
-    def __init__(self, token = None, text = None):
-        if token is None:
-            token = self.__class__.__name__
+    def __init__(self, symbol_name = None, text = None):
+        if symbol_name is None:
+            symbol_name = self.__class__.__name__
     
-        self.token = token
+        self.symbol_name = symbol_name 
         self.text = text
         self.isTerminal = text is not None
     
     def __str__(self):
-        return self.__class__.__name__
+        return self.symbol_name
 
