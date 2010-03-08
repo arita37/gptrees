@@ -7,7 +7,7 @@ import ply.lex as lex
 TOKENS = ('ID', 
     'LP', # Left parenthesis
     'RP', # Right parenthesis
-    'STR', # A literal string, e.g. '+'
+    'STRING', # A literal string, e.g. '+'
     'COMMA', #
     'IS', # Derivation ::= or -->
 )
@@ -41,7 +41,7 @@ class Lexer(object):
 
     # --- TOKENS patterns --- #
 
-    def t_STR(self, t):
+    def t_STRING(self, t):
         r"'([^'\\]|\\.)*'"
         t.value = t.value[1:-1] # remove single quotes
         return t

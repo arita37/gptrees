@@ -8,7 +8,7 @@ class Terminal(Symbol):
     ''' A terminal (STR or ID)
     '''
     def __init__(self, text):
-        super(self.__class__, self).__init__(text = text)
+        Symbol.__init__(self, text = text)
 
     def __str__(self):
         return self.__class__.__name__ + ': ' + self.text

@@ -6,7 +6,11 @@ from symbol import Symbol
 
 class Arglist(Symbol):
     def __init__(self, arglistOrTerminal, terminal = None):
-        super(self.__class__, self).__init__()
+        ''' Creates an argument list, by concatenaing an arglist
+        + a terminal. If only a terminal is specified, then
+        it is converted to a list.
+        '''
+        Symbol.__init__(self)
 
         self.list = []
 

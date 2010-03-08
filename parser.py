@@ -39,9 +39,9 @@ def p_terminal_is_ID(p):
     '''
 
 def p_terminal_is_STR(p):
-    ''' Terminal : STR
+    ''' Terminal : STRING
     '''
-    p[0] = symbol.Terminal(p.text)
+    p[0] = symbol.STRING(p[1])
     print p[0]
 
 
