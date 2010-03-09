@@ -38,17 +38,17 @@ def make_tree(id, treedef_list):
 '''
 # Start symbol
 def p_S(p):
-    ''' S : headersection TreeList
+    ''' S : optionalsection TreeList optionalsection
     '''
-    p[0] = [p[1], p[2]]
+    p[0] = [p[1], p[2], p[3]]
 
-def p_header_section(p):
-    ''' headersection : 
+def p_optional_section(p):
+    ''' optionalsection : 
     '''
     p[0] = None # Epsilon
 
-def p_header_section_definition(p):
-    ''' headersection : HEADERSECTION
+def p_optional_section_definition(p):
+    ''' optionalsection : INLINECODE
     '''
     p[0] = p[1]
 
@@ -116,13 +116,17 @@ if __name__ == '__main__':
     parser = yacc.yacc()
     
     if len(sys.argv) < 2:
-        HEADER, L = parser.parse(sys.stdin.read())
+        HEADER, L, ENDCODE = parser.parse(sys.stdin.read())
     else:
-        HEADER, L = parser.parse(open(sys.argv[1], "rt").read())
+        HEADER, L, ENDCODE = parser.parse(open(sys.argv[1], "rt").read())
 
-    print HEADER
+    if HEADER is not None:
+        print HEADER
 
     for T in L:
         print T
+
+    if ENDCODE is not None:
+        print ENDCODE
     
 
