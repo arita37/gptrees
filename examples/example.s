@@ -5,7 +5,11 @@ TREE --> BINARY
 TREE --> UNARY
 UNARY --> NUM
 UNARY --> VAR
-BINARY --> '+'(TREE, TREE)
 VAR --> 'x'
+
+BINARY --> '+'(TREE, TREE)
+         | '-'(TREE, TREE)
+         | '*'(TREE, TREE)
+         | '/'(TREE, TREE)
 
 
