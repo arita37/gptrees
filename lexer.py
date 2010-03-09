@@ -12,7 +12,8 @@ TOKENS = ('ID',
     'IS', # Derivation ::= or -->
     'OR', # Disjunction |
     'INLINECODE',
-    'SC'  # Semocolon ;
+    'SC',  # Semocolon ;
+    'EXPR', # A simple expression
 )
 
 
@@ -65,6 +66,12 @@ class Lexer(object):
     def t_INLINECODE(self, t):
         r'%{([^%]|%(?!}))*%}'
         t.value = t.value[2:-3]
+        t.lexer.lineno += t.value.count('\n')
+        return t
+
+    def t_EXPR(self, t):
+        r'{[^}]*}'
+        t.value = t.value[1:-1]
         return t
 
     def t_ID(self, t):

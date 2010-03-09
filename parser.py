@@ -5,11 +5,14 @@
 from ply import yacc
 from lexer import Lexer
 from lexer import TOKENS as tokens
+from gptreeserror import GPTreesError
 import symbol
 
-
+# Simple symbol table. Keys are nonterminals
 SYMBOL_TABLE = {}
 
+# Simple generators table. Keys are terminals
+GENERATORS = {}
 
 
 def make_tree(id, treedef_list):
@@ -40,6 +43,10 @@ def make_tree(id, treedef_list):
 def p_S(p):
     ''' S : optionalsection TreeList optionalsection
     '''
+    for terminal in GENERATORS.keys(): # Check for undefined terminal generators
+        if GENERATORS[terminal] is None:
+            if SYMBOL_TABLE.get(terminal, None) is None: # Is it a terminal?
+                raise GPTreesError("Undefined generator for '%s'" % terminal)
     p[0] = [p[1], p[2], p[3]]
 
 def p_optional_section(p):
@@ -98,10 +105,20 @@ def p_arglist_is_list_arglist(p):
     '''
     p[0] = symbol.Arglist(p[1], p[3])
 
-def p_terminal_is_ID(p):
-    ''' Terminal : ID
+def p_terminal_is_ID_EXPR(p):
+    ''' Terminal : ID EXPR
     '''
     p[0] = symbol.ID(p[1])
+    if GENERATORS.get(p[1], None) is not None:
+        raise GPTreesError('Duplicated generator for terminal [%s]' % p[1])
+    GENERATORS[p[1]] = p[2]
+
+def p_terminal_is_ID(p):
+    ''' Terminal : ID 
+    '''
+    p[0] = symbol.ID(p[1])
+    if p[1] not in GENERATORS.keys():
+        GENERATORS[p[1]] = None # Mark this element as a terminal
 
 def p_terminal_is_STR(p):
     ''' Terminal : STRING
@@ -121,12 +138,19 @@ if __name__ == '__main__':
         HEADER, L, ENDCODE = parser.parse(open(sys.argv[1], "rt").read())
 
     if HEADER is not None:
+        print '# --- HEADER        ---'
         print HEADER
+        print '# --- END of HEADER ---\n'
 
-    for T in L:
-        print T
+    if L:
+        print '# --- GRAMMAR       ---'
+        for T in L:
+            print T
+        print '# --- GRAMMAR END   ---'
 
     if ENDCODE is not None:
+        print '\n# --- BODY          ---'
         print ENDCODE
+        print '# --- END OF BODY   ---'
     
 

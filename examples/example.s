@@ -15,7 +15,7 @@ def new_number():
 
 TREE --> BINARY;
 TREE --> UNARY;
-UNARY --> NUM;
+UNARY --> NUM { new_number() };
 UNARY --> VAR;
 VAR --> 'x';
 
