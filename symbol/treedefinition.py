@@ -16,27 +16,32 @@ class TreeDefinition(Symbol):
     All symbols A, B, C, D (the 1st on each rule definition)
     must be different.
     '''
-    defs = {}
-
-    def __init__(self, name, treedef_list):
+    def __init__(self, left, treedef_list):
         ''' Constructor. Requires Symbol S and a list [ ] of
         TreeDefs objects
         '''
         Symbol.__init__(self)
-        self.name = name # Tree symbol (left side of the rule)
+        self.left = left # Tree symbol (left side of the rule, S symbol)
+        self.defs = {}
+        self.add_alternatives(treedef_list)
 
+    @property
+    def alternatives(self):
+        return self.defs.values()
+
+    def add_alternatives(self, treedef_list):
         for definition in treedef_list:
-            if self.defs.get(definition.first, None): # Already a rule with this prefix?
-                raise GPTreesError('Ambiguous definition for %s with symbol %s' % (name, definition.first))
+            id = definition.first.text # Gets the ID yy_text
+            if self.defs.get(id, None): # Already a rule with this prefix?
+                raise GPTreesError('Ambiguous definition for %s with symbol %s' % (left, id))
 
-            self.defs[definition.first] = definition
-            
+            self.defs[id] = definition
 
     def __str__(self):
         result = ''
-        sep = str(self.name) + ' --> '
+        sep = str(self.left) + ' --> '
 
-        for treedef in self.defs.values():
+        for treedef in self.alternatives:
             result += sep + str(treedef) + '\n'
             sep = '    | '
     

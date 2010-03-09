@@ -5,26 +5,58 @@
 from ply import yacc
 from lexer import Lexer
 from lexer import TOKENS as tokens
-from symboltable import SymbolTable
 import symbol
 
+SYMBOL_TABLE = {}
 
+
+def make_tree(id, treedef_list):
+    ''' Returns a tree for the new ID.
+    If the ID already exists, returns
+    the existing tree, adding the treedef_list 
+    to the rule alternatives.
+    If for the given tree two rules start with the same
+    prefix, an error is raised.
+    '''
+    result = SYMBOL_TABLE.get(id.text, None)
+    if result: # There are alternatives for the given ID. So add the new ones
+        result.add_alternatives(treedef_list)
+    else: # There's no alternatives for the given ID. Create tree definition
+        result = symbol.TreeDefinition(id, treedef_list)
+
+    SYMBOL_TABLE[id.text] = result
+
+    return result
+
+
+'''
+--------------------------
+    Grammar Definition
+--------------------------
+'''
 # Start symbol
 def p_S(p):
-    ''' S : TreeDefinition
+    ''' S : TreeList
     '''
-    p[0] = [p[1]]
+    for T in p[1]:
+        print T
+    p[0] = p[1]
 
-def p_Slist(p):
-    ''' S : S TreeDefinition
+def p_treelist_treedefinition(p):
+    ''' TreeList : TreeDefinition
     '''
-    p[0] = p[1] + [p[2]]
+    p[0] = set([p[1]])
+
+def p_treelist_treelist_treedefinition(p):
+    ''' TreeList : TreeList TreeDefinition
+    '''
+    p[1].add(p[2]) # Add the tree to de Set
+    p[0] = p[1]
 
 def p_tree_is_treedef_list(p):
     ''' TreeDefinition : ID IS TreeDefList
     '''
-    p[0] = symbol.TreeDefinition(symbol.ID(p[1]), p[3])
-    print p[0]
+    p[0] = make_tree(symbol.ID(p[1]), p[3])
 
 def p_tree_is_definition(p):
     ''' TreeDefList : TreeDef
