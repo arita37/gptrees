@@ -10,7 +10,15 @@ class TreeDef(Symbol):
     '''
     def __init__(self, terminal, arglist = None):
         Symbol.__init__(self)
-        self.terminal = terminal # 1st symbol in the right side
+        self.first = terminal # 1st symbol in the right side
         self.arglist = arglist # Optional arglist
 
+    def __str__(self):
+        ''' string representation of this object.
+        '''
+        result = str(self.first)
+        if self.arglist:
+            result += ' ' + str(self.arglist) 
 
+        return result
+        

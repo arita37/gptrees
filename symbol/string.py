@@ -7,3 +7,6 @@ from terminal import Terminal
 class STRING(Terminal):
     ''' An STRING terminal symbol
     '''
+    def __str__(self):
+        return "'" + self.text + "'"
+

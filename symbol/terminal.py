@@ -11,5 +11,5 @@ class Terminal(Symbol):
         Symbol.__init__(self, text = text)
 
     def __str__(self):
-        return self.symbol_name + ': ' + self.text
+        return self.symbol_name
 

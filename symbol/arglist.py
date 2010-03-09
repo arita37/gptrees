@@ -26,5 +26,6 @@ class Arglist(Symbol):
         return self.list[key]
 
     def __str__(self):
-        return self.symbol_name + ': [' + ', '.join(str(x) for x in self.list) + ']'
+        return '(' + ', '.join(str(x) for x in self.list) + ')' if self.list else ''
 
+        
