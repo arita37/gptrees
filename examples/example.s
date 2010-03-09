@@ -1,4 +1,16 @@
+%{
 
+
+import random
+
+def new_number():
+    ''' Generate a random num in the 
+    [-10, 10] interval.
+    '''
+    return random.randint(-10, 10)
+
+
+%}
 
 
 TREE --> BINARY;

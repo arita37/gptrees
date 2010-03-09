@@ -7,7 +7,9 @@ from lexer import Lexer
 from lexer import TOKENS as tokens
 import symbol
 
+
 SYMBOL_TABLE = {}
+
 
 
 def make_tree(id, treedef_list):
@@ -36,7 +38,17 @@ def make_tree(id, treedef_list):
 '''
 # Start symbol
 def p_S(p):
-    ''' S : TreeList
+    ''' S : headersection TreeList
+    '''
+    p[0] = [p[1], p[2]]
+
+def p_header_section(p):
+    ''' headersection : 
+    '''
+    p[0] = None # Epsilon
+
+def p_header_section_definition(p):
+    ''' headersection : HEADERSECTION
     '''
     p[0] = p[1]
 
@@ -104,9 +116,11 @@ if __name__ == '__main__':
     parser = yacc.yacc()
     
     if len(sys.argv) < 2:
-        L = parser.parse(sys.stdin.read())
+        HEADER, L = parser.parse(sys.stdin.read())
     else:
-        L = parser.parse(open(sys.argv[1], "rt").read())
+        HEADER, L = parser.parse(open(sys.argv[1], "rt").read())
+
+    print HEADER
 
     for T in L:
         print T
