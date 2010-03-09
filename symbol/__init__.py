@@ -4,6 +4,7 @@
 
 from symbol import Symbol
 from treedefinition import TreeDefinition
+from treedef import TreeDef
 from arglist import Arglist
 from terminal import Terminal
 from id import ID

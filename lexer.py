@@ -10,6 +10,7 @@ TOKENS = ('ID',
     'STRING', # A literal string, e.g. '+'
     'COMMA', #
     'IS', # Derivation ::= or -->
+    'OR', # Disjunction |
 )
 
 
@@ -64,6 +65,10 @@ class Lexer(object):
 
     def t_IS(self, t):
         r'-->|::='
+        return t
+
+    def t_OR(self, t):
+        r'\|'
         return t
 
     # ---
