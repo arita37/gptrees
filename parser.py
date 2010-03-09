@@ -38,8 +38,6 @@ def make_tree(id, treedef_list):
 def p_S(p):
     ''' S : TreeList
     '''
-    for T in p[1]:
-        print T
     p[0] = p[1]
 
 def p_treelist_treedefinition(p):
@@ -106,8 +104,11 @@ if __name__ == '__main__':
     parser = yacc.yacc()
     
     if len(sys.argv) < 2:
-        parser.parse(sys.stdin.read())
+        L = parser.parse(sys.stdin.read())
     else:
-        parser.parse(open(sys.argv[1], "rt").read())
+        L = parser.parse(open(sys.argv[1], "rt").read())
+
+    for T in L:
+        print T
     
 
