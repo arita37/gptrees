@@ -11,6 +11,7 @@ TOKENS = ('ID',
     'COMMA', #
     'IS', # Derivation ::= or -->
     'OR', # Disjunction |
+    'SC'  # Semocolon ;
 )
 
 
@@ -40,7 +41,12 @@ class Lexer(object):
         '''
         print "illegal character '%s'" % t.value[0]
 
-    # --- TOKENS patterns --- #
+    
+    def t_linecomment(self, t):
+        r'\#.*'
+        # --- Skip from # to EOL
+
+    # --- TOKEN patterns --- #
 
     def t_STRING(self, t):
         r"'([^'\\]|\\.)*'"
@@ -69,6 +75,10 @@ class Lexer(object):
 
     def t_OR(self, t):
         r'\|'
+        return t
+
+    def t_SC(self, t):
+        r';'
         return t
 
     # ---
