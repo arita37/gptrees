@@ -33,7 +33,7 @@ class TreeDefinition(Symbol):
         for definition in treedef_list:
             id = definition.first.text # Gets the ID yy_text
             if self.defs.get(id, None): # Already a rule with this prefix?
-                raise GPTreesError('Ambiguous definition for %s with symbol %s' % (left, id))
+                raise GPTreesError('Ambiguous definition for %s with symbol %s' % (self.left, id))
 
             self.defs[id] = definition
 
