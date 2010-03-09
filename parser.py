@@ -54,7 +54,7 @@ def p_treelist_treelist_treedefinition(p):
     p[0] = p[1]
 
 def p_tree_is_treedef_list(p):
-    ''' TreeDefinition : ID IS TreeDefList
+    ''' TreeDefinition : ID IS TreeDefList SC
     '''
     p[0] = make_tree(symbol.ID(p[1]), p[3])
 
