@@ -11,6 +11,7 @@ TOKENS = ('ID',
     'COMMA', #
     'IS', # Derivation ::= or -->
     'OR', # Disjunction |
+    'HEADERSECTION',
     'SC'  # Semocolon ;
 )
 
@@ -61,6 +62,11 @@ class Lexer(object):
         r'\)'
         return t
 
+    def t_HEADERSECTION(self, t):
+        r'%{([^%]|%(?!}))*%}'
+        t.value = t.value[2:-3]
+        return t
+
     def t_ID(self, t):
         r'[a-zA-Z][a-zA-Z\d]*'
         return t
@@ -80,6 +86,7 @@ class Lexer(object):
     def t_SC(self, t):
         r';'
         return t
+
 
     # ---
 
