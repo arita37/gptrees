@@ -11,5 +11,5 @@ class GPTreesError(Exception):
         self.msg = msg
 
     def __str__(self):
-        return 'GPTreesError: ' + self.msg
+        return str(self.msg)
     
