@@ -56,7 +56,7 @@ def p_S(p):
     for terminal in GENERATORS.keys(): # Check for undefined terminal generators
         if GENERATORS[terminal] is None:
             if SYMBOL_TABLE.get(terminal, None) is None: # Is it a terminal?
-                raise GPTreesError("Undefined generator for '%s'" % terminal)
+                syntax_error("Undefined generator for '%s'" % terminal)
     p[0] = [p[1], p[2], p[3]]
 
 
@@ -88,7 +88,10 @@ def p_treelist_treelist_treedefinition(p):
 def p_tree_is_treedef_list(p):
     ''' TreeDefinition : ID IS TreeDefList SC
     '''
-    p[0] = make_tree(symbol.ID(p[1]), p[3])
+    try:
+        p[0] = make_tree(symbol.ID(p[1]), p[3])
+    except GPTreesError as s:
+        syntax_error(s.msg, lineno = p.lineno(1))
 
 
 def p_tree_is_definition(p):
@@ -115,7 +118,7 @@ def p_treedefaction_treedef_action(p):
     p[1].generator = p[2]
     if p[1].is_terminal:
         if GENERATORS.get(p[1].first.text, None) is not None:
-            raise GPTreesError('Duplicated generator for terminal [%s]' % p[1].text)
+            syntax_error('Duplicated generator for terminal [%s]' % p[1].text, lineno = p[2].lineno)
         GENERATORS[p[1].first.text] = p[2]
     p[0] = p[1]
 
@@ -160,13 +163,19 @@ def p_terminal_is_STR(p):
 
 def p_error(p):
     # Error production
-    syntax_error(p.lineno, 'Unexpected token "%s"' % yacc.token().value)
+    tok = yacc.token()
+    if tok is None:
+        syntax_error('Unexpected en of file')
+    else:
+        syntax_error('Unexpected token "%s"' % tok.value, line = tok.lineno)
 
 
-def syntax_error(lineno, msg):
+def syntax_error(msg, lineno = None):
     ''' A syntax error msg.
     '''
-    msg = str(lineno) + ': ' + msg
+    if lineno is not None:
+        msg = str(lineno) + ': ' + msg
+
     if FILENAME != '':
         msg = FILENAME + ':' + msg
 
