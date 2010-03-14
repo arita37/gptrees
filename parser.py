@@ -118,7 +118,7 @@ def p_treedefaction_treedef_action(p):
     p[1].generator = p[2]
     if p[1].is_terminal:
         if GENERATORS.get(p[1].first.text, None) is not None:
-            syntax_error('Duplicated generator for terminal [%s]' % p[1].text, lineno = p[2].lineno)
+            syntax_error('Duplicated generator for terminal [%s]' % p[1], lineno = p.lineno(2))
         GENERATORS[p[1].first.text] = p[2]
     p[0] = p[1]
 
