@@ -22,6 +22,11 @@ class Lexer(object):
     ''' Lexer embedded in a class so several Lexer instances
     can be used in the same program.
     '''
+
+    states = (
+            ('codeblock', 'exclusive'),
+            )
+
     def __init__(self, tokens = TOKENS):
         ''' Constructor: tokens = t-uple with TOKENS list
         '''
@@ -38,7 +43,7 @@ class Lexer(object):
         t.lexer.lineno += 1
         
 
-    def t_error(self, t):
+    def t_INITIAL_codeblock_error(self, t):
         ''' Error handling rule. Called on lexical error.
         '''
         print "illegal character '%s'" % t.value[0]
@@ -69,11 +74,6 @@ class Lexer(object):
         t.lexer.lineno += t.value.count('\n')
         return t
 
-    def t_EXPR(self, t):
-        r'{[^}]*}'
-        t.value = t.value[1:-1]
-        return t
-
     def t_ID(self, t):
         r'[a-zA-Z][a-zA-Z\d]*'
         return t
@@ -93,6 +93,38 @@ class Lexer(object):
     def t_SC(self, t):
         r';'
         return t
+
+    def t_INITIAL_LBRACKET(self, t):
+        r'\{'
+        self.lb_count = 1
+        self.codeblock = ''
+        t.lexer.begin('codeblock')
+
+    def t_codeblock_LBRACKET(self, t):
+        r'\{'
+        self.lb_count += 1
+        self.codeblock += t.value
+
+    def t_codeblock_newline(self, t):
+        r'\r?\n'
+        self.codeblock += t.value
+        t.lexer.lineno += 1
+
+    def t_codeblock_EXPR(self, t):
+        r'\}'
+        self.lb_count -= 1
+
+        if not self.lb_count:
+            t.value = self.codeblock
+            t.lexer.begin('INITIAL')
+            return t
+
+        self.codeblock += t.value
+            
+    def t_codeblock_anychar(self, t):
+        r'[^\r\n{}]+'
+        self.codeblock += t.value
+        
 
 
     # ---
