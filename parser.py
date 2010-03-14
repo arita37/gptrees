@@ -2,11 +2,21 @@
 # -*- coding: utf-8 -*-
 # vim:ts=4:et:
 
+import sys
+
 from ply import yacc
 from lexer import Lexer
 from lexer import TOKENS as tokens
 from gptreeserror import GPTreesError
 import symbol
+
+
+# Default STDERR
+STDERR = sys.stderr
+
+# FILENAME of the current source code.
+# Empty string for STDIN
+FILENAME = ''
 
 # Simple symbol table. Keys are nonterminals
 SYMBOL_TABLE = {}
@@ -49,20 +59,24 @@ def p_S(p):
                 raise GPTreesError("Undefined generator for '%s'" % terminal)
     p[0] = [p[1], p[2], p[3]]
 
+
 def p_optional_section(p):
     ''' optionalsection : 
     '''
     p[0] = None # Epsilon
+
 
 def p_optional_section_definition(p):
     ''' optionalsection : INLINECODE
     '''
     p[0] = p[1]
 
+
 def p_treelist_treedefinition(p):
     ''' TreeList : TreeDefinition
     '''
     p[0] = set([p[1]])
+
 
 def p_treelist_treelist_treedefinition(p):
     ''' TreeList : TreeList TreeDefinition
@@ -70,61 +84,94 @@ def p_treelist_treelist_treedefinition(p):
     p[1].add(p[2]) # Add the tree to de Set
     p[0] = p[1]
 
+
 def p_tree_is_treedef_list(p):
     ''' TreeDefinition : ID IS TreeDefList SC
     '''
     p[0] = make_tree(symbol.ID(p[1]), p[3])
 
+
 def p_tree_is_definition(p):
-    ''' TreeDefList : TreeDef
+    ''' TreeDefList : TreeDefAction
     '''
     p[0] = [p[1]] # Make a list with a single node
 
+
 def p_tree_is_list_definition(p):
-    ''' TreeDefList : TreeDefList OR TreeDef
+    ''' TreeDefList : TreeDefList OR TreeDefAction
     '''
     p[0] = p[1] + [p[3]] # Concatenate
+
+
+def p_treedefaction_default(p):
+    ''' TreeDefAction : TreeDef
+    '''
+    p[0] = p[1]
+
+
+def p_treedefaction_treedef_action(p):
+    ''' TreeDefAction : TreeDef EXPR
+    '''
+    p[1].generator = p[2]
+    if p[1].is_terminal:
+        if GENERATORS.get(p[1].first.text, None) is not None:
+            raise GPTreesError('Duplicated generator for terminal [%s]' % p[1].text)
+        GENERATORS[p[1].first.text] = p[2]
+    p[0] = p[1]
+
 
 def p_tree_is_terminal(p):
     ''' TreeDef : Terminal
     '''
     p[0] = symbol.TreeDef(p[1])
 
+
 def p_tree_is_subtree(p):
     ''' TreeDef : Terminal LP Arglist RP
     '''
     p[0] = symbol.TreeDef(p[1], p[3])
+
 
 def p_arglist_is_tree(p):
     ''' Arglist : Terminal
     '''
     p[0] = symbol.Arglist(p[1])
 
+
 def p_arglist_is_list_arglist(p):
     ''' Arglist : Arglist COMMA Terminal
     '''
     p[0] = symbol.Arglist(p[1], p[3])
 
-def p_terminal_is_ID_EXPR(p):
-    ''' Terminal : ID EXPR
-    '''
-    p[0] = symbol.ID(p[1])
-    if GENERATORS.get(p[1], None) is not None:
-        raise GPTreesError('Duplicated generator for terminal [%s]' % p[1])
-    GENERATORS[p[1]] = p[2]
 
 def p_terminal_is_ID(p):
     ''' Terminal : ID 
     '''
-    p[0] = symbol.ID(p[1])
     if p[1] not in GENERATORS.keys():
         GENERATORS[p[1]] = None # Mark this element as a terminal
+    p[0] = symbol.ID(p[1])
+
 
 def p_terminal_is_STR(p):
     ''' Terminal : STRING
     '''
     p[0] = symbol.STRING(p[1])
 
+
+def p_error(p):
+    # Error production
+    syntax_error(p.lineno, 'Unexpected token "%s"' % yacc.token().value)
+
+
+def syntax_error(lineno, msg):
+    ''' A syntax error msg.
+    '''
+    msg = str(lineno) + ': ' + msg
+    if FILENAME != '':
+        msg = FILENAME + ':' + msg
+
+    STDERR.write(msg + '\n')
+    sys.exit(1)
 
 
 if __name__ == '__main__':
