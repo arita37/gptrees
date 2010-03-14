@@ -70,7 +70,7 @@ class Lexer(object):
 
     def t_INLINECODE(self, t):
         r'%{([^%]|%(?!}))*%}'
-        t.value = t.value[2:-3]
+        t.value = t.value[2:-2]
         t.lexer.lineno += t.value.count('\n')
         return t
 
@@ -125,7 +125,6 @@ class Lexer(object):
         r'[^\r\n{}]+'
         self.codeblock += t.value
         
-
 
     # ---
 
