@@ -183,10 +183,10 @@ def syntax_error(msg, lineno = None):
     sys.exit(1)
 
 
+parser = yacc.yacc()
+
 if __name__ == '__main__':
     import sys
-
-    parser = yacc.yacc()
     
     if len(sys.argv) < 2:
         HEADER, L, ENDCODE = parser.parse(sys.stdin.read())
