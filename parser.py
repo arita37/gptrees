@@ -26,11 +26,14 @@ SYMBOL_TABLE = {}
 # Simple generators table. Keys are terminals
 GENERATORS = {}
 
+# First grammar symbol
+START_SYMBOL = None
+
 
 def _RESET_(mode = MODE_NORMAL):
     ''' Initializes parser status
     '''
-    global MODE, STDERR
+    global MODE, STDERR, START_SYMBOL
     global FILENAME, SYMBOL_TABLE, GENERATORS
 
     MODE = mode
@@ -38,6 +41,7 @@ def _RESET_(mode = MODE_NORMAL):
     FILENAME = ''
     SYMBOL_TABLE = {}
     GENERATORS = {}
+    START_SYMBOL = None
 
 
 def make_tree(id, treedef_list):
@@ -103,10 +107,15 @@ def p_treelist_treelist_treedefinition(p):
 def p_tree_is_treedef_list(p):
     ''' TreeDefinition : ID IS TreeDefList SC
     '''
+    global START_SYMBOL
+
     try:
         p[0] = make_tree(symbol.ID(p[1]), p[3])
     except GPTreesError as s:
         syntax_error(s.msg, lineno = p.lineno(1))
+
+    if START_SYMBOL is None:
+        START_SYMBOL = p[1]
 
 
 def p_tree_is_definition(p):
@@ -130,7 +139,7 @@ def p_treedefaction_default(p):
 def p_treedefaction_treedef_action(p):
     ''' TreeDefAction : TreeDef EXPR
     '''
-    p[1].generator = p[2]
+    p[1].generator = eval('lambda _ :' + p[2])
     if p[1].is_terminal:
         if GENERATORS.get(p[1].first.text, None) is not None:
             syntax_error('Duplicated generator for terminal [%s]' % p[1], lineno = p.lineno(2))

@@ -15,7 +15,11 @@ class TreeDef(Symbol):
         # If no generator specified, a default one is created
         # which will just return a string of the terminal
         if generator is None: 
-            generator = lambda *args, **kwargs : self.first.text
+            if self.is_terminal:
+                generator = terminal.generator
+            else:
+                generator = arglist[0].generator
+
         self.generator = generator # Optional generator function
 
     def __str__(self):
