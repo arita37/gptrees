@@ -182,7 +182,7 @@ def p_error(p):
     if tok is None:
         syntax_error('Unexpected en of file')
     else:
-        syntax_error('Unexpected token "%s"' % tok.value, line = tok.lineno)
+        syntax_error('Unexpected token "%s"' % tok.value, lineno = tok.lineno)
 
 
 def syntax_error(msg, lineno = None):
