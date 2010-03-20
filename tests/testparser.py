@@ -2,10 +2,10 @@
 # -*- coding: utf-8 -*-
 # vim:ts=4:et:
 
+import re
 import unittest
 import parser
 from gptreeserror import GPTreesError
-
 
 
 class TestParser(unittest.TestCase):
@@ -15,6 +15,7 @@ class TestParser(unittest.TestCase):
         parser.MODE = parser.MODE_EXCEPT
         self.parser = parser.parser
         self.TEST = parser._TEST_
+        self.reERR_AMBI = re.compile('[0-9]+: Duplicated generator for terminal \[[^\]]+]')
 
     def __parseTEST(self, f1, f2):
         ''' Load and parses file f1, and compares its
@@ -22,6 +23,15 @@ class TestParser(unittest.TestCase):
         '''
         return self.TEST(open(f1, 'rt').read()) == open(f2, 'rt').read()
 
+    def __ambiguousTEST(self, f1):
+        try:
+            self.TEST(open(f1).read())
+        except GPTreesError, v:
+            pass
+        except:
+            self.fail("ambiguous grammar undetected in file '%s'" % f1) 
+
+        return self.reERR_AMBI.match('29: Duplicated generator for terminal [NUM]') is not None
 
     def testSyntaxError(self):
         ''' Test for a generic syntax error is produced on error examples
@@ -35,6 +45,16 @@ class TestParser(unittest.TestCase):
         ''' Test the example produces the expected output.
         '''
         self.assertTrue(self.__parseTEST('tests/input/example.s', 'tests/output/example.out'))
+
+    def testDuplicated(self):
+        '''Test for ambiguous / duplicated definitions, case 1
+        '''
+        self.assertTrue(self.__ambiguousTEST('tests/input/duplicated.s'))
+
+    def testDuplicated2(self):
+        '''Test for ambiguous / duplicated definitions, case 1
+        '''
+        self.assertTrue(self.__ambiguousTEST('tests/input/duplicated2.s'))
 
 
 
