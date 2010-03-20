@@ -3,6 +3,7 @@
 # vim:ts=4:et:
 
 import ply.lex as lex
+from gptreeserror import GPTreesError
 
 TOKENS = ('ID', 
     'LP', # Left parenthesis
@@ -16,6 +17,8 @@ TOKENS = ('ID',
     'EXPR', # A simple expression
 )
 
+MODE_NORMAL = 0 # On error, prints an error msg (default)
+MODE_EXCEPT = 1 # On error, raises a GPTreeError exception
 
 
 class Lexer(object):
@@ -27,11 +30,12 @@ class Lexer(object):
             ('codeblock', 'exclusive'),
             )
 
-    def __init__(self, tokens = TOKENS):
+    def __init__(self, tokens = TOKENS, mode = MODE_NORMAL):
         ''' Constructor: tokens = t-uple with TOKENS list
         '''
         self.lex = None
         self.tokens = tokens
+        self.mode = mode
 
     def t_skip(self, t):
         r'[ \t]+' # Matches one or more spaces and tabs
@@ -46,7 +50,12 @@ class Lexer(object):
     def t_INITIAL_codeblock_error(self, t):
         ''' Error handling rule. Called on lexical error.
         '''
-        print "illegal character '%s'" % t.value[0]
+        msg = "illegal character '%s'" % t.value[0]
+
+        if self.mode == MODE_EXCEPT:
+            raise GPTreesError(msg)
+
+        print msg
 
     
     def t_linecomment(self, t):
@@ -133,7 +142,7 @@ class Lexer(object):
         '''
         self.input_data = str
         self.lex = lex.lex(object = self) # Creates a lexer instance
-        self.lex.input = self.input_data  # Fills internal lexer with str chars.
+        self.lex.input(self.input_data)  # Fills internal lexer with str chars.
 
     def token(self):
         ''' Returns next token to the parser
