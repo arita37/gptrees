@@ -3,7 +3,7 @@
 # vim:ts=4:et:
 
 import unittest
-from tests import TestLexer
+from tests import TestLexer, TestParser
 
 if __name__ == '__main__':
     unittest.main()

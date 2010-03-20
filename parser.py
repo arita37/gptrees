@@ -5,11 +5,13 @@
 import sys
 
 from ply import yacc
-from lexer import Lexer
+from lexer import Lexer, MODE_NORMAL, MODE_EXCEPT
 from lexer import TOKENS as tokens
 from gptreeserror import GPTreesError
 import symbol
 
+# Default parsing mode
+MODE = MODE_NORMAL
 
 # Default STDERR
 STDERR = sys.stderr
@@ -23,6 +25,19 @@ SYMBOL_TABLE = {}
 
 # Simple generators table. Keys are terminals
 GENERATORS = {}
+
+
+def _RESET_(mode = MODE_NORMAL):
+    ''' Initializes parser status
+    '''
+    global MODE, STDERR
+    global FILENAME, SYMBOL_TABLE, GENERATORS
+
+    MODE = mode
+    STDERR = sys.stderr
+    FILENAME = ''
+    SYMBOL_TABLE = {}
+    GENERATORS = {}
 
 
 def make_tree(id, treedef_list):
@@ -179,11 +194,40 @@ def syntax_error(msg, lineno = None):
     if FILENAME != '':
         msg = FILENAME + ':' + msg
 
+    if MODE == MODE_EXCEPT:
+        raise GPTreesError(msg)
+
     STDERR.write(msg + '\n')
     sys.exit(1)
 
 
 parser = yacc.yacc()
+
+
+def _TEST_(inputstr):
+    ''' This function is used to TEST the parser
+    (see relative tests). Basically, a string input
+    is passed, and an output string is returned
+    containing parsing information, or a GPTreesError
+    exception raised.
+    '''
+    _RESET_(mode = MODE_EXCEPT)
+
+    HEADER, L, ENDCODE = parser.parse(inputstr)
+    result = ''
+
+    if HEADER is not None:
+        result += HEADER + '\n'
+
+    if L:
+        for T in L:
+            result += str(T) + '\n'
+
+    if ENDCODE is not None:
+        result += ENDCODE + '\n'
+
+    return result
+
 
 if __name__ == '__main__':
     import sys
