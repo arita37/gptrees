@@ -14,12 +14,6 @@ class TreeDef(Symbol):
 
         # If no generator specified, a default one is created
         # which will just return a string of the terminal
-        if generator is None: 
-            if self.is_terminal:
-                generator = terminal.generator
-            else:
-                generator = arglist[0].generator
-
         self.generator = generator # Optional generator function
 
     def __str__(self):
@@ -31,10 +25,6 @@ class TreeDef(Symbol):
 
         return result
         
-    @property
-    def is_terminal(self):
-        return self.arglist is None
-
     @property
     def name(self):
         ''' If this tree definition is a terminal, it will

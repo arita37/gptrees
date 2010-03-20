@@ -13,8 +13,8 @@ class Terminal(Symbol):
     def __str__(self):
         return self.symbol_name
 
-    def generator(self, *args):
+    def generator(self, _):
         return self.text
 
-    def __call__(self, *args):
-        return generator(self, *args)
+    def __call__(self, _):
+        return generator(self, _)

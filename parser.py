@@ -140,7 +140,7 @@ def p_treedefaction_treedef_action(p):
     ''' TreeDefAction : TreeDef EXPR
     '''
     p[1].generator = eval('lambda _ :' + p[2])
-    if p[1].is_terminal:
+    if not p[1].arglist: # A --> B { EXPR } | There can be only one EXPR for B
         if GENERATORS.get(p[1].first.text, None) is not None:
             syntax_error('Duplicated generator for terminal [%s]' % p[1], lineno = p.lineno(2))
         GENERATORS[p[1].first.text] = p[2]
@@ -189,7 +189,7 @@ def p_error(p):
     # Error production
     tok = yacc.token()
     if tok is None:
-        syntax_error('Unexpected en of file')
+        syntax_error('Unexpected end of file')
     else:
         syntax_error('Unexpected token "%s"' % tok.value, lineno = tok.lineno)
 

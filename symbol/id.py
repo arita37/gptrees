@@ -18,6 +18,6 @@ class ID(Terminal):
     def __str__(self):
         return self.text
 
-    def __call__(self, *args):
-        return self.generator(*args)
+    def __call__(self):
+        return self.generator()
 

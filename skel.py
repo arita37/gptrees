@@ -27,12 +27,14 @@ class Rule(object):
         If called with no arguments, it will return
         the result of the 1st generator
         '''
-        if self.right.is_terminal:   # Not a subtree
-            return self.right.generator()
+        _ = [self.right.first.generator([])]
 
-        _ = []
-        for i in self.right.arglist:
-            _ += [self.grammar.generate(i.text)]
+        if self.right.arglist:
+            for i in self.right.arglist:
+                if self.grammar.isTerminal(i):
+                    _ += [i.generator([])]
+                else:
+                    _ += [self.grammar.generate(i.text)]
 
         if self.generator is None:
             return _[0]
@@ -74,6 +76,9 @@ class Grammar(object):
 
     def __call__(self, symbol, *args):
         return self.generate(symbol, *args)
+
+    def isTerminal(self, symbol):
+        return symbol.text not in self.symbols.keys()
         
 
 
