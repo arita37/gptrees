@@ -6,6 +6,21 @@ import sys
 from parser import parser
 
 
+class Grammar(object):
+    ''' Describes grammar rules
+    '''
+    class Rule(objec):
+        ''' Describes a rule
+        '''
+        def __init__(self, left, rights):
+            self.left = left # left part
+            self.right = rights # Right parts (a list)
+
+        def generate(self):
+            
+
+
+
 def generate(input_str):
     ''' Parses an input string and returns another one
     containing the generated program skeleton.
