@@ -21,7 +21,12 @@ class TestParser(unittest.TestCase):
         ''' Load and parses file f1, and compares its
         output with file f2
         '''
-        return self.TEST(open(f1, 'rt').read()) == open(f2, 'rt').read()
+        tmp = self.TEST(open(f1, 'rt').read()).split('\n')
+        a = [x.rstrip() for x in tmp if x.rstrip() != '']
+        b = [x.rstrip() for x in open(f2, 'rt').read().split('\n') if x.rstrip() != '']
+        
+        return a == b
+
 
     def __ambiguousTEST(self, f1):
         try:

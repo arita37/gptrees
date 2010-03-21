@@ -15,13 +15,13 @@ def new_number():
 
 TREE --> BINARY;
 TREE --> UNARY;
-UNARY --> NUM { new_number() };
+UNARY --> NUM { '0' };
 UNARY --> VAR;
 VAR --> 'x';
 
-BINARY --> '+'(TREE, TREE)
-         | '-'(TREE, TREE)
-         | '*'(TREE, TREE)
-         | '/'(TREE, TREE)
+BINARY --> '+'(TREE, TREE) { _[1] + _[0] + _[2] } 
+         | '-'(TREE, TREE) { _[1] + _[0] + _[2] } 
+         | '*'(TREE, TREE) { _[1] + _[0] + _[2] } 
+         | '/'(TREE, TREE) { _[1] + _[0] + _[2] }
 ;
 

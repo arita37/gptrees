@@ -27,7 +27,10 @@ class Rule(object):
         If called with no arguments, it will return
         the result of the 1st generator
         '''
-        _ = [self.right.first.generator([])]
+        if self.grammar.isTerminal(self.right.first):
+            _ = [self.right.first.generator([])]
+        else:
+            _ = [self.grammar.generate(self.right.first.text)]
 
         if self.right.arglist:
             for i in self.right.arglist:
@@ -88,14 +91,15 @@ def generate(input_str):
     '''
     HEADER, L, ENDCODE = parser.parse(input_str)
 
-    result = ''
+    result = 'from skel import Grammar\n'
 
     if HEADER is not None:
         result += HEADER + '\n'
 
     result = result + """
-class Generator(object):
-    def generate(self):
+
+def generate(self):
+    
     """
 
     grammar = Grammar(Parser.START_SYMBOL)

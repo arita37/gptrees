@@ -229,7 +229,9 @@ def _TEST_(inputstr):
         result += HEADER + '\n'
 
     if L:
-        for T in L:
+        sorted = list(L)
+        sorted.sort()
+        for T in sorted:
             result += str(T) + '\n'
 
     if ENDCODE is not None:
