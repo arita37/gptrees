@@ -32,3 +32,9 @@ class TreeDef(Symbol):
         Otherwise, it will return None
         '''
         return self.first.text if self.is_terminal else None
+
+    @property
+    def is_tree(self):
+        ''' Whether this definition is a tree (A, B, ...)
+        return self.arglist is not None
+        '''
